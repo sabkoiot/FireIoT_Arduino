@@ -4,8 +4,8 @@
 #define WIFI_PASSWORD "zxccxzzxc"
 #define FIREBASE_HOST "fireiot-app-default-rtdb.asia-southeast1.firebasedatabase.app"
 #define API_KEY "AIzaSyBMbMzH-djvb9E8ywJDF2T9V3f_UeF9G-Q"
-#define USER_EMAIL "pk@praveensmedia.com"
-#define USER_PASSWORD "123456"
+#define USER_EMAIL "XXXX@XX.com"
+#define USER_PASSWORD "XXXXXX"
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
