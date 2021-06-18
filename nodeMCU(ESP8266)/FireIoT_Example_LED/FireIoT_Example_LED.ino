@@ -1,17 +1,19 @@
 #include <ESP8266WiFi.h>
 #include <FirebaseESP8266.h>
 #include <Ticker.h>
-#define WIFI_SSID "praveensWiFi"
-#define WIFI_PASSWORD "zxccxzzxc"
-#define FIREBASE_HOST "fireiot-app-default-rtdb.asia-southeast1.firebasedatabase.app"
-#define API_KEY "AIzaSyBMbMzH-djvb9E8ywJDF2T9V3f_UeF9G-Q"
-#define USER_EMAIL "pk@praveensmedia.com"
-#define USER_PASSWORD "123456"
-FirebaseData fbdoDn;
-FirebaseData fbdoUp;
-FirebaseAuth auth;
-FirebaseConfig config;
-String path = "";
+#define FIREBASE_HOST "fireiot-app-default-rtdb.asia-southeast1.firebasedatabase.app" //Do not change this
+#define API_KEY "AIzaSyBMbMzH-djvb9E8ywJDF2T9V3f_UeF9G-Q" //Do not change this
+//Wifi Credentials:
+#define WIFI_SSID "praveensWiFi" //Your Home WiFi SSID (name)
+#define WIFI_PASSWORD "zxccxzzxc" //WiFi Password
+//User Credentials:
+#define USER_EMAIL "pk@praveensmedia.com"//Rigistered Email on FireioT App
+#define USER_PASSWORD "123456"//Your passoword
+FirebaseData fbdoDn;//Firebase Database Instance for Down Stream(getting Commands from FireioT App)
+FirebaseData fbdoUp;//Firebase Database instance for Up Stream(Sending Data from This Device to FireioT App)
+FirebaseAuth auth;  //Instance of Firebase Authentication
+FirebaseConfig config;//Instance of Firebase Configuration
+String path = ""; //To store the full Path of the Database
 bool switchState[8];//This boll Array is to Store incoming SwithStates(Switch_0 to Switch_7)
 signed int seekBarInt[3];// This usigned in is to Store Inconing SeekBar Values(SeekBar_0 to SeekBar_2)
 String dispString[] = {"myDisp1","Disp2","Connected"};//This String Array stores Outgoing Strings.(Disp_0 to Disp_2)
@@ -52,75 +54,55 @@ void setup()
   Firebase.reconnectWiFi(true);
   fbdoDn.setResponseSize(1024);
   fbdoDn.setBSSLBufferSize(1024, 1024);
-  //Firebase.setReadTimeout(fbdo, 3000);
-  String base_path = "/FireIoT/Users/";
+  String base_path = "/FireIoT/Users/";//Do not Change this
   
-  path = base_path + auth.token.uid.c_str()+"/Data";
-  if (!Firebase.beginStream(fbdoDn, path+"/StreamDn")){
-    Serial.println("Error Reason: " + fbdoDn.errorReason());
+  path = base_path + auth.token.uid.c_str()+"/Data";////Do not Change this
+  if (!Firebase.beginStream(fbdoDn, path+"/StreamDn")){//Do not Change this
+    Serial.println("Error Reason: " + fbdoDn.errorReason());//Print for Debugging
   }
-  pinMode(LED_BUILTIN,OUTPUT);
-  //updateDB.attach(2, UpdateDispBool);
+  pinMode(LED_BUILTIN,OUTPUT);// Declaring  LED_BUILTIN as OUTPUT
 }
 
 void loop()
 {
-
-//if (millis() - sendDataPrevMillis > updateDelay)
-//  {
-//    sendDataPrevMillis = millis();
-//    count++;
-//    dispString[1] =(String)count;
-//    dispString[0] =(String)(count+5);
-//    FirebaseJson json;
-//    json.set("inTxt0", dispString[0]);
-//    json.set("inTxt1", dispString[1]);
-//    json.set("inTxt2", dispString[2]);
-//    Firebase.setJSON(fbdoUp, path + "/StreamUp", json);
-//  }
-  
   if (!Firebase.readStream(fbdoDn)){
-    Serial.println("Error Reason: " + fbdoDn.errorReason());    
+    Serial.println("Error Reason: " + fbdoDn.errorReason());  //Print for Debugging  
       }
 
-  if (fbdoDn.streamTimeout())
-  {
-    Serial.println("Stream timeout, resume streaming...");
-    Serial.println();
+  if (fbdoDn.streamTimeout()){
+    Serial.println("Stream timeout, resume streaming...");//Print for Debugging
       }
 
-  if (fbdoDn.streamAvailable())
+  if (fbdoDn.streamAvailable())//If Down Stream Available(Any Input from The FireioT App)
   {/*
     This below string look like 00000000|0|0|0; This is the incoming data from FireIoT App. 
     First 8 char Ripresents 8 switches(Switch_0 to Switch 7)
     Next Strings between | | pipes Represents SeekBars(SeekBar_0 to SeekBar_2)
     */
-    String dd =fbdoDn.stringData();
-    for(int i=0; i<8;i++){
+    String dd =fbdoDn.stringData();//Do not change this
+    Serial.println(dd);//just for Debugging,, prints incoming data string from FireioT App
+    for(int i=0; i<8;i++){//Do not change this
       if(dd.substring(i,i+1) == "0"){//Converting 0 or 1 char to bool.
         switchState[i]=false;
       }else{
         switchState[i]=true;
         }
     }
-    String SeekStr=dd.substring(9);
-    int seekCount=0;
-    int seekIndex=0;
-    for (int i = 0; i < SeekStr.length(); i++) {
-        if (SeekStr.substring(i, i+1) == "|") {
-          seekBarInt[seekCount] =SeekStr.substring(seekIndex, i).toInt();
-          seekCount++;
-          seekIndex=i+1;
+    String SeekStr=dd.substring(9);//Do not change this-- Extracts the Data for SeekBars
+    int seekCount=0;//Do not change this
+    int seekIndex=0;//Do not change this
+    for (int i = 0; i < SeekStr.length(); i++) {//Do not change this
+        if (SeekStr.substring(i, i+1) == "|") {//Do not change this
+          seekBarInt[seekCount] =SeekStr.substring(seekIndex, i).toInt();//Do not change this
+          seekCount++;//Do not change this
+          seekIndex=i+1;//Do not change this
           }
         }
-    Serial.println(dd);//just for Debugging
-    //Serial.println(seekBarInt[0]);
-    //Serial.println(seekBarInt[1]);
-    //Serial.println(seekBarInt[2]);
-    digitalWrite(LED_BUILTIN,!switchState[0]);//switchState[Switch number (0 to 7)]
     
-    float delayInMills=(float)seekBarInt[0]/1000.0;
-    dispString[2]="LED State:"+(String)(switchState[0])+"-"+(String)delayInMills;
+    digitalWrite(LED_BUILTIN,!switchState[0]);//switchState[Switch number (0 to 7)]
+
+    float delayInMills=(float)seekBarInt[0]/1000.0; //seekBarInt[SeekBar Number (0 to 2)]-- we are using seekBar 0 for Blynk Delay;
+    //dispString[2]="LED State:"+(String)(switchState[0])+"-"+(String)delayInMills;
     if(switchState[0]){
       flipper.attach(delayInMills, flip);
     }else{
@@ -128,41 +110,9 @@ void loop()
       digitalWrite(LED_BUILTIN,HIGH);
       }
   }
-  //if(diplayUpdate)updateDisp();
-  
 }
 
 void flip() {
   digitalWrite(LED_BUILTIN, ledState);     // set pin to the opposite state
   ledState =!ledState;
 }
-//void updateDisp() {
-//  FirebaseJson json;
-//  diplayUpdate=false;
-//  count++;
-//  dispString[0]= (String)count+".00";
-//  
-//    json.set("inTxt0", dispString[0]);
-//    json.set("inTxt1", dispString[1]);
-//    json.set("inTxt2", dispString[2]);
-//     //upStrings.add("inTxt"+i, dispString[i]);
-//     //Firebase.setString(fbdo, path + "/StreamUp/inTxt"+i, dispString[i]);
-//  
-//  if (Firebase.setJSON(fbdo, path + "/StreamUp", json))
-//    {
-//      Serial.println("PASSED");
-//      Serial.println();
-//    }
-//    else
-//    {
-//      Serial.println("FAILED");
-//      Serial.println("REASON: " + fbdo.errorReason());
-//      Serial.println("------------------------------------");
-//      Serial.println();
-//    }
-//    
-//  
-//}
-//void UpdateDispBool(){
-//  diplayUpdate =true;
-//  }
