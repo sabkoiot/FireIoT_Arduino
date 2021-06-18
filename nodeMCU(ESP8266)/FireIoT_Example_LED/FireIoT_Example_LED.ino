@@ -4,11 +4,11 @@
 #define FIREBASE_HOST "fireiot-app-default-rtdb.asia-southeast1.firebasedatabase.app" //Do not change this
 #define API_KEY "AIzaSyBMbMzH-djvb9E8ywJDF2T9V3f_UeF9G-Q" //Do not change this
 //Wifi Credentials:
-#define WIFI_SSID "praveensWiFi" //Your Home WiFi SSID (name)
-#define WIFI_PASSWORD "zxccxzzxc" //WiFi Password
+#define WIFI_SSID "Wifi_name" //Your Home WiFi SSID (name)
+#define WIFI_PASSWORD "pass" //WiFi Password
 //User Credentials:
-#define USER_EMAIL "pk@praveensmedia.com"//Rigistered Email on FireioT App
-#define USER_PASSWORD "123456"//Your passoword
+#define USER_EMAIL "Email"//Rigistered Email on FireioT App
+#define USER_PASSWORD "pass"//Your passoword
 FirebaseData fbdoDn;//Firebase Database Instance for Down Stream(getting Commands from FireioT App)
 FirebaseData fbdoUp;//Firebase Database instance for Up Stream(Sending Data from This Device to FireioT App)
 FirebaseAuth auth;  //Instance of Firebase Authentication
